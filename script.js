@@ -40,10 +40,16 @@ function renderWeatherDashboard(location){
     weatherTypeHolder.appendChild(weatherTypeDiv);
     weatherTypeHolder.appendChild(weatherDescriptionDiv);
 
+    const saveLocationBtn = document.createElement('button');
+    saveLocationBtn.classList.add('save-location-btn');
+    saveLocationBtn.innerText = 'Save';
+    saveLocationBtn.addEventListener('click', () => {saveLocation(location)});
+
     weatherDashboard.appendChild(dashboardPhoto);
     weatherDashboard.appendChild(locationTitle);
     weatherDashboard.appendChild(temperatureHolder);
     weatherDashboard.appendChild(weatherTypeHolder);
+    weatherDashboard.appendChild(saveLocationBtn);
 
     output.appendChild(weatherDashboard);
 }
@@ -110,4 +116,62 @@ async function getGeoLocations(input) {
     
 }
 
+const savedLocations = JSON.parse(localStorage.getItem('savedLocations')) || [];
+
+
+function saveLocation(location) {
+    savedLocations.push(location);
+
+    localStorage.setItem('savedLocations',JSON.stringify(savedLocations));
+}
+
+function renderSavedLocations(){
+    output.innerHTML = '';
+
+    savedLocations.forEach(location => {
+        const index = savedLocations.findIndex(l => l.name === location.name);
+
+        const savedLocationCard = document.createElement('div');
+        savedLocationCard.classList.add('saved-location-card');
+
+        const locationTitle = document.createElement('div');
+        locationTitle.classList.add('saved-location-title');
+        locationTitle.innerText = location.name;
+
+        const locationPhoto = document.createElement('div');
+
+        output.appendChild(savedLocationCard);
+
+        savedLocationCard.addEventListener('click', (even) => {
+            const target = event.target;
+
+            if(target === removeSavedLocationBtn){
+
+            } else {
+                const lon = location.coord.lon;
+                const lat = location.coord.lat;
+
+                getWeatherInfo(lat, lon);
+            }
+        })
+
+        const removeSavedLocationBtn = document.createElement('button');
+        removeSavedLocationBtn.classList.add('remove-saved-location-btn');
+        removeSavedLocationBtn.innerText = 'X';
+
+        removeSavedLocationBtn.addEventListener('click', () => {
+            savedLocations.splice(index, 1);
+            localStorage.setItem('savedLocations',JSON.stringify(savedLocations));
+            renderSavedLocations();
+        })
+
+        savedLocationCard.appendChild(locationPhoto);
+        savedLocationCard.appendChild(locationTitle);
+        savedLocationCard.appendChild(removeSavedLocationBtn);
+    });
+};
+
+
 searchBtn.addEventListener('click', () => {getGeoLocations(searchBar)});
+
+renderSavedLocations();

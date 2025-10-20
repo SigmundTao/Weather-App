@@ -21,3 +21,19 @@
     flex-direction: column;
     height: 1000px;
 }
+
+.save-location-btn {
+    width: 50px;
+    height: 25px;
+}
+
+.saved-location-card {
+    border: 1px solid black;
+    height: 200px;
+    width: 400px;
+    border-radius: 15px;
+}
+
+.saved-location-card:hover {
+    cursor: pointer;
+}
