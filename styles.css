@@ -1,0 +1,23 @@
+:root {
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.location-card {
+    height: 200px;
+    width: 500px;
+    border: 1px solid black;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.weather-dashboard {
+    width: 1000px;
+    border: 10px solid black;
+    display: flex;
+    flex-direction: column;
+    height: 1000px;
+}
