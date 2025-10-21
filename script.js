@@ -18,7 +18,7 @@ function createWeatherMap(lat, lon){
   
     L.tileLayer(
         `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${APIkey}`,
-        { opacity: 0.6 }
+        { opacity: 0.8 }
     ).addTo(currentMap);
   
   L.marker([lat, lon]).addTo(currentMap)
@@ -34,7 +34,7 @@ window.addEventListener('load', () => {
   });
 });
 
-function renderWeatherDashboard(location, weatherMap){
+function renderWeatherDashboard(location){
     output.innerHTML = '';
 
     const weatherDashboard = document.createElement('div');
@@ -50,24 +50,37 @@ function renderWeatherDashboard(location, weatherMap){
 
     mapHolder.appendChild(mapDiv);
 
+    const photoAndHeaderHolder = document.createElement('div');
+    photoAndHeaderHolder.classList.add('photo-header-container');
+
     const dashboardPhoto = document.createElement('div');
     dashboardPhoto.classList.add('dashboard-photo');
 
-    const loactionName = location.name;
+    const headerContainer = document.createElement('div');
+    headerContainer.classList.add('dashboard-header-container');
+
+    photoAndHeaderHolder.appendChild(dashboardPhoto);
+    photoAndHeaderHolder.appendChild(headerContainer);
+
     const locationTitle = document.createElement('div');
     locationTitle.classList.add('location-title');
-    locationTitle.innerText = loactionName;
-
+    const loactionName = location.name;
+    const locationCountry = location.sys.country;
+    locationTitle.innerText = `${loactionName}, ${locationCountry}`;
     const temperature = Math.floor(kelvinToCelcius(location.main.temp));
     const temperatureHolder = document.createElement('div');
     temperatureHolder.classList.add('temperature');
-    temperatureHolder.innerText = `${temperature}`;
+    temperatureHolder.innerText = `${temperature}°`;
+    const tempAndTitleHolder = document.createElement('div');
+    tempAndTitleHolder.classList.add('temp-and-title-holder');
+    tempAndTitleHolder.appendChild(locationTitle);
+    tempAndTitleHolder.appendChild(temperatureHolder);
 
 
     const weatherType = location.weather[0].main;
     const weatherTypeDiv = document.createElement('div');
     weatherTypeDiv.classList.add('weather-type-div');
-    weatherTypeDiv.innerText = weatherType;
+    weatherTypeDiv.innerText = `${weatherType},`;
 
     const weatherDescription = location.weather[0].description;
     const weatherDescriptionDiv = document.createElement('div');
@@ -77,6 +90,19 @@ function renderWeatherDashboard(location, weatherMap){
     const weatherTypeHolder = document.createElement('div');
     weatherTypeHolder.classList.add('weather-type-holder');
 
+    weatherTypeHolder.appendChild(weatherTypeDiv);
+    weatherTypeHolder.appendChild(weatherDescriptionDiv);
+
+    headerContainer.appendChild(tempAndTitleHolder);
+    headerContainer.appendChild(weatherTypeHolder);
+    
+    //sunset/sunrise
+    const timeDivHolder = document.createElement('div');
+    timeDivHolder.classList.add('time-div-holder');
+
+    const sunrise = location.sys.sunrise;
+    const sunset = location.sys.sunset;
+    //Weather info cards
     const weatherInfoCardsHolder = document.createElement('div');
     weatherInfoCardsHolder.classList.add('weather-info-cards-holder');
 
@@ -104,19 +130,14 @@ function renderWeatherDashboard(location, weatherMap){
 
     createWeatherInfoCards(mainWeatherInfo, weatherInfoCardsHolder);
     
-    weatherTypeHolder.appendChild(weatherTypeDiv);
-    weatherTypeHolder.appendChild(weatherDescriptionDiv);
-
     const saveLocationBtn = document.createElement('button');
     saveLocationBtn.classList.add('save-location-btn');
     saveLocationBtn.innerText = 'Save';
     saveLocationBtn.addEventListener('click', () => {saveLocation(location); renderSavedLocations()});
 
     
-    weatherDashboard.appendChild(dashboardPhoto);
-    weatherDashboard.appendChild(locationTitle);
-    weatherDashboard.appendChild(temperatureHolder);
-    weatherDashboard.appendChild(weatherTypeHolder);
+    weatherDashboard.appendChild(photoAndHeaderHolder);
+    weatherDashboard.appendChild(timeDivHolder);
     weatherDashboard.appendChild(saveLocationBtn);
     weatherDashboard.appendChild(weatherInfoCardsHolder);
     weatherDashboard.appendChild(mapHolder);
@@ -152,7 +173,6 @@ function createWeatherInfoCards(array, cardHolder){
 
 async function getWeatherInfo(lat, lon) {
     const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIkey}`;
-    const mapURL = `http://maps.openweathermap.org/maps/2.0/weather/PA0/1/1/1?appid=${APIkey}`
     try {
         const response = await fetch(currentWeatherUrl);
 
@@ -252,6 +272,7 @@ function renderSavedLocations(){
                 const lat = location.coord.lat;
 
                 getWeatherInfo(lat, lon);
+                openSidebar();
             }
         })
 

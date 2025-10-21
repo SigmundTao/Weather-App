@@ -1,6 +1,11 @@
 :root {
     --primary: #F5F5F5;
     --secondary: #BDBDBD;
+    --module-color: #0F0F0F;
+    --module-secondary: #171717;
+    --module-tertiary: #121212;
+    --module-border-radius: 8px;
+    --module-font-color: white;
 }
 
 * {
@@ -15,19 +20,17 @@ body {
     margin: 0;
     display: flex;
     flex-direction: column;
+    background-color: #282828;
 }
 
 #container {
     height: 90vh;
     border: 1px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
 }
 
 #page-header {
-    background-color: var(--primary);
+    background-color: var(--module-color);
     height: 10vh;
     width: 100vw;
     display: flex;
@@ -42,24 +45,23 @@ body {
     border-radius: 25px;
     border: 1px solid var(--secondary);
     padding-left: 10px;
+    border: none;
+    color: var(--module-font-color);
+    background-color: var(--module-tertiary);
 }
 
 #search-results {
-  flex: 1;
   transition: margin-left 0.3s ease-in-out;
-  padding: calc(10vh + 20px) 20px 20px 20px;
   border: 1px solid red;
   display: flex;
   flex-direction: column;
-  align-items: center;
   overflow-y: scroll;
   width: 100%;
-  height: 100%;
+  height: 90vh;
 }
 
 #search-results.sidebar-open {
-    margin-left: 25vw
-    ;
+    margin-left: 25vw;
 }
 
 .location-card {
@@ -79,24 +81,99 @@ body {
     border-bottom-right-radius: 15px;
 }
 
+/* Weather Dashboard */
 .weather-dashboard {
-    width: 100%;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    padding: 0;
+    margin: 0;
+    justify-content: flex-start;
+}
+
+.photo-header-container {
+    width: 100%;
+    height: 50vh;
+    position: relative;
 }
 
 .dashboard-photo {
     border-bottom: 1px solid var(--secondary);
-    height: 30%;
+    height: 100%;
+    width: 100%;
     aspect-ratio: 1;
+    background-image: url('https://images.unsplash.com/photo-1680216370618-f9938e5c9a17?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170');
+    background-size: cover;
+}
+
+.dashboard-header-container {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    height: 15vh;
+    background-color: var(--module-color);
+    border-radius: var(--module-border-radius);
+    color: var(--module-font-color);
+    padding: 15px;
+    justify-content: space-between;
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
 }
 
 .save-location-btn {
-    width: 50px;
+    width: 100px;
     height: 25px;
+    
+    background-color: var(--module-secondary);
+    border: 2px solid var(--module-color);
+    border-radius: var(--module-border-radius);
+    color: var(--module-font-color);
 }
 
+.location-title {
+    height: 100%;
+    font-size: 2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+}
+
+.temperature {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+.temp-and-title-holder {
+    display: flex;
+    gap: 15px;
+    height: 50%;
+    background-color: var(--module-secondary);
+    border-radius: var(--module-border-radius);
+}
+
+.weather-type-holder {
+    height: 30%;
+    width: 70%;
+    display: flex;
+    gap: 15px;
+    padding-left: 15px;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: var(--module-tertiary);
+    border-radius: var(--module-border-radius);
+}
+
+.time-div-holder {
+    border: 1px solid gold;
+    height: 5vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
 /* Sidebar */
 #sidebar {
     position: fixed; /* Always fixed — no layout shift */
@@ -104,7 +181,8 @@ body {
     left: 0;
     width: 25vw;
     height: 100vh;
-    background-color: var(--secondary);
+    background-color: var(--module-tertiary);
+    color: var(--module-font-color);
     padding-top: 10vh; /* Push below the fixed header */
     transition: transform 0.3s ease-in-out; /* Smooth transition */
     transform: translateX(0); /* Default: visible */
@@ -120,9 +198,10 @@ body {
 #sidebar-btn {
     height: 50%;
     aspect-ratio: 1;
-    border: 1px solid black;
     position: absolute;
     left: 25px;
+    background-image: url('./menu.svg');
+    background-size: cover;
 }
 
 #sidebar-btn:hover {
@@ -164,7 +243,7 @@ body {
     flex-wrap: nowrap;
     border-top-right-radius: 15px;
     border-top-left-radius: 15px;
-    background-color: var(--primary);
+    background-color: var(--module-secondary);
     overflow-x: hidden;
     font-size: small;
     font-weight: bold;
@@ -176,32 +255,52 @@ body {
 
 /* Weather info cards */
 .weather-info-cards-holder {
-    height: 40%;
+    height: 40vh;
+    padding: 15px;
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
+    border: 1px solid violet;
 }
 
 .weather-info-card {
-    border: 1px solid red;
-    height: 30%;
+    border-radius: 8px;
+    background-color: var(--module-color);
+    height: 100%;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 30%;
+    color: white;
+    gap: 5px;
+    padding: 10px;
 }
 
 .info-row {
     display: flex;
-    border: 1px solid blue;
-    height: 25%;
+    height: 20%;
+    border-radius: 8px;
+    border: 1px var(--secondary);
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--module-secondary);
+    width: 100%;
+    font-weight: bold;
+    padding-left: 5px;
+}
+
+.info-row:hover {
+    border: 1px solid white;
+    cursor: default;
 }
 
 .info-row-title {
-    width: 75%;
+    width: 50%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     font-size: 0.8rem;
 }
@@ -210,12 +309,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid greenyellow;
-    width: 25%;
+    height: 100%;
+    aspect-ratio: 1;
+    background-color: var(--module-tertiary);
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    font-weight: bold;
 }
 
 #weather-map {
-    height: 400px;
+    height: 100px;
     width: 100%;
     border-radius: 8px;
     margin-top: 20px;
