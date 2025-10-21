@@ -1,14 +1,31 @@
 const APIkey = 'a8c5ce5092e4ae85e34b3bc5df582c77';
-
 const searchBar = document.getElementById('search-bar');
 const searchBtn = document.getElementById('search-btn');
 const output = document.getElementById('search-results');
 const sidebar = document.getElementById('sidebar');
 const sidebarBtn = document.getElementById('sidebar-btn');
 const savedLocationsHolder = document.getElementById('saved-locations-holder');
+let currentMap = null;
+
+function createWeatherMap(lat, lon){
+    if(currentMap){
+        currentMap.remove();
+    }
+
+    currentMap = L.map('weather-map').setView([lat, lon], 10);
+  
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(currentMap);
+  
+    L.tileLayer(
+        `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${APIkey}`,
+        { opacity: 0.6 }
+    ).addTo(currentMap);
+  
+  L.marker([lat, lon]).addTo(currentMap)
+}
 
 function kelvinToCelcius(kelvin){
-    return kelvin - 273.15;
+    return Math.floor(kelvin - 273.15);
 }
 
 window.addEventListener('load', () => {
@@ -17,11 +34,21 @@ window.addEventListener('load', () => {
   });
 });
 
-function renderWeatherDashboard(location){
+function renderWeatherDashboard(location, weatherMap){
     output.innerHTML = '';
 
     const weatherDashboard = document.createElement('div');
     weatherDashboard.classList.add('weather-dashboard');
+
+    const mapHolder = document.createElement('div');
+    mapHolder.classList.add('map-holder');
+
+    const mapDiv = document.createElement('div');
+    mapDiv.id = 'weather-map';
+    mapDiv.style.height = '400px';
+    mapDiv.style.width = '100%';
+
+    mapHolder.appendChild(mapDiv);
 
     const dashboardPhoto = document.createElement('div');
     dashboardPhoto.classList.add('dashboard-photo');
@@ -49,6 +76,33 @@ function renderWeatherDashboard(location){
 
     const weatherTypeHolder = document.createElement('div');
     weatherTypeHolder.classList.add('weather-type-holder');
+
+    const weatherInfoCardsHolder = document.createElement('div');
+    weatherInfoCardsHolder.classList.add('weather-info-cards-holder');
+
+    const mainWeatherInfo = [];
+
+    const humidity = location.main.humidity;
+    const humidityTitle = 'Humidity';
+    mainWeatherInfo.push([humidityTitle, humidity]);
+
+    const feelsLike = kelvinToCelcius(location.main.feels_like);
+    const feelsLikeTitle = 'Feels like';
+    mainWeatherInfo.push([feelsLikeTitle, feelsLike])
+
+    const maxTemp = kelvinToCelcius(location.main.temp_max);
+    const maxTempTitle = 'Max Temperature';
+    mainWeatherInfo.push([maxTempTitle, maxTemp]);
+
+    const minTemp = kelvinToCelcius(location.main.temp_min);
+    const minTempTitle = 'Min Temperature';
+    mainWeatherInfo.push([minTempTitle, minTemp]);
+
+    const windSpeed = location.wind.speed;
+    const windSpeedTitle = 'Wind Speed';
+    mainWeatherInfo.push([windSpeedTitle, windSpeed])
+
+    createWeatherInfoCards(mainWeatherInfo, weatherInfoCardsHolder);
     
     weatherTypeHolder.appendChild(weatherTypeDiv);
     weatherTypeHolder.appendChild(weatherDescriptionDiv);
@@ -58,18 +112,47 @@ function renderWeatherDashboard(location){
     saveLocationBtn.innerText = 'Save';
     saveLocationBtn.addEventListener('click', () => {saveLocation(location); renderSavedLocations()});
 
+    
     weatherDashboard.appendChild(dashboardPhoto);
     weatherDashboard.appendChild(locationTitle);
     weatherDashboard.appendChild(temperatureHolder);
     weatherDashboard.appendChild(weatherTypeHolder);
     weatherDashboard.appendChild(saveLocationBtn);
+    weatherDashboard.appendChild(weatherInfoCardsHolder);
+    weatherDashboard.appendChild(mapHolder);
 
     output.appendChild(weatherDashboard);
+    createWeatherMap(location.coord.lat, location.coord.lon);
+}
+
+function createWeatherInfoCards(array, cardHolder){
+    const weatherInfoCard = document.createElement('div');
+    weatherInfoCard.classList.add('weather-info-card');
+
+    array.forEach(i => {
+        const infoRow = document.createElement('div');
+        infoRow.classList.add('info-row');
+
+        const infoRowTitle = document.createElement('div');
+        infoRowTitle.classList.add('info-row-title');
+        infoRowTitle.innerText = i[0];
+
+        const infoRowInfo = document.createElement('div');
+        infoRowInfo.classList.add('info-row-info');
+        infoRowInfo.innerText = i[1];
+
+        infoRow.appendChild(infoRowTitle);
+        infoRow.appendChild(infoRowInfo);
+
+        weatherInfoCard.appendChild(infoRow);
+        cardHolder.appendChild(weatherInfoCard);
+    })
+
 }
 
 async function getWeatherInfo(lat, lon) {
     const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIkey}`;
-
+    const mapURL = `http://maps.openweathermap.org/maps/2.0/weather/PA0/1/1/1?appid=${APIkey}`
     try {
         const response = await fetch(currentWeatherUrl);
 
