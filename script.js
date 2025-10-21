@@ -3,6 +3,19 @@ const APIkey = 'a8c5ce5092e4ae85e34b3bc5df582c77';
 const searchBar = document.getElementById('search-bar');
 const searchBtn = document.getElementById('search-btn');
 const output = document.getElementById('search-results');
+const sidebar = document.getElementById('sidebar');
+const sidebarBtn = document.getElementById('sidebar-btn');
+const savedLocationsHolder = document.getElementById('saved-locations-holder');
+
+function kelvinToCelcius(kelvin){
+    return kelvin - 273.15;
+}
+
+window.addEventListener('load', () => {
+  requestAnimationFrame(() => {
+    document.body.classList.remove('no-transition');
+  });
+});
 
 function renderWeatherDashboard(location){
     output.innerHTML = '';
@@ -18,10 +31,10 @@ function renderWeatherDashboard(location){
     locationTitle.classList.add('location-title');
     locationTitle.innerText = loactionName;
 
-    const temperature = location.main.temp;
+    const temperature = Math.floor(kelvinToCelcius(location.main.temp));
     const temperatureHolder = document.createElement('div');
     temperatureHolder.classList.add('temperature');
-    temperatureHolder.innerText = temperature;
+    temperatureHolder.innerText = `${temperature}`;
 
 
     const weatherType = location.weather[0].main;
@@ -43,7 +56,7 @@ function renderWeatherDashboard(location){
     const saveLocationBtn = document.createElement('button');
     saveLocationBtn.classList.add('save-location-btn');
     saveLocationBtn.innerText = 'Save';
-    saveLocationBtn.addEventListener('click', () => {saveLocation(location)});
+    saveLocationBtn.addEventListener('click', () => {saveLocation(location); renderSavedLocations()});
 
     weatherDashboard.appendChild(dashboardPhoto);
     weatherDashboard.appendChild(locationTitle);
@@ -75,9 +88,11 @@ function renderLocationCards(array) {
     output.innerHTML = ``;
 
     array.forEach(location => {
-
             const locationCard = document.createElement('div');
             locationCard.classList.add('location-card');
+
+            const locationCardPhoto = document.createElement('div');
+            locationCardPhoto.classList.add('location-card-photo');
 
             const locationTitle = document.createElement('div');
             locationTitle.classList.add('location-title');
@@ -85,6 +100,7 @@ function renderLocationCards(array) {
             locationTitle.innerText = loactionName;
 
             locationCard.appendChild(locationTitle);
+            locationCard.appendChild(locationCardPhoto);
 
             output.appendChild(locationCard);
 
@@ -116,6 +132,7 @@ async function getGeoLocations(input) {
     
 }
 
+//Saved locations functionality
 const savedLocations = JSON.parse(localStorage.getItem('savedLocations')) || [];
 
 
@@ -126,7 +143,7 @@ function saveLocation(location) {
 }
 
 function renderSavedLocations(){
-    output.innerHTML = '';
+    savedLocationsHolder.innerHTML = '';
 
     savedLocations.forEach(location => {
         const index = savedLocations.findIndex(l => l.name === location.name);
@@ -140,9 +157,9 @@ function renderSavedLocations(){
 
         const locationPhoto = document.createElement('div');
 
-        output.appendChild(savedLocationCard);
+        savedLocationsHolder.appendChild(savedLocationCard);
 
-        savedLocationCard.addEventListener('click', (even) => {
+        savedLocationCard.addEventListener('click', (event) => {
             const target = event.target;
 
             if(target === removeSavedLocationBtn){
@@ -171,6 +188,19 @@ function renderSavedLocations(){
     });
 };
 
+const openSidebar = () => {
+    if(sidebar.classList.contains('closed')){
+        sidebar.classList.remove('closed');
+        output.classList.add('sidebar-open');
+        output.classList.remove('sidebar-closed');
+    } else if(!sidebar.classList.contains('closed')){
+        sidebar.classList.add('closed');
+        output.classList.add('sidebar-closed');
+        output.classList.remove('sidebar-open');
+    }
+}
+
+sidebarBtn.addEventListener('click', openSidebar);
 
 searchBtn.addEventListener('click', () => {getGeoLocations(searchBar)});
 
