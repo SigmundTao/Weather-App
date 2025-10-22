@@ -5,8 +5,11 @@ const output = document.getElementById('search-results');
 const sidebar = document.getElementById('sidebar');
 const sidebarBtn = document.getElementById('sidebar-btn');
 const savedLocationsHolder = document.getElementById('saved-locations-holder');
+const homeBtn = document.getElementById('home-btn');
 let currentMap = null;
+let isHomePageShowing = true;
 
+//Map Creation
 function createWeatherMap(lat, lon){
     if(currentMap){
         currentMap.remove();
@@ -24,6 +27,7 @@ function createWeatherMap(lat, lon){
   L.marker([lat, lon]).addTo(currentMap)
 }
 
+// Unit conversion
 function kelvinToCelcius(kelvin){
     return Math.floor(kelvin - 273.15);
 }
@@ -34,6 +38,7 @@ window.addEventListener('load', () => {
   });
 });
 
+//Weather Dashboard
 function renderWeatherDashboard(location){
     output.innerHTML = '';
 
@@ -176,6 +181,10 @@ async function getWeatherInfo(lat, lon) {
     try {
         const response = await fetch(currentWeatherUrl);
 
+        output.innerHTML = ``;
+        const spinner = document.createElement('span');
+        spinner.classList.add('loading-spinner');
+
         const data = await response.json();
         console.log(data);
 
@@ -183,6 +192,11 @@ async function getWeatherInfo(lat, lon) {
 
     } catch(error){
         console.log(error);
+        output.innerHTML = ''
+        const errorCard = document.createElement('div');
+        errorCard.classList.add('error-message');
+        errorCard.innerText = 'failed to load location';
+        output.appendChild(errorCard);
     }
 }
 
@@ -227,10 +241,23 @@ async function getGeoLocations(input) {
         const data = await response.json();
         console.log(data);
 
-        renderLocationCards(data);
+        if(!data.length){
+            output.innerHTML = ''
+            const errorCard = document.createElement('div');
+            errorCard.classList.add('error-message');
+            errorCard.innerText = 'failed to load location';
+            output.appendChild(errorCard);
+        } else {
+            renderLocationCards(data);
+        }
 
     } catch (error){
         console.log(error);
+        output.innerHTML = ''
+        const errorCard = document.createElement('div');
+        errorCard.classList.add('error-message');
+        errorCard.innerText = 'failed to load location';
+        output.appendChild(errorCard);
     };
     
 }
@@ -247,6 +274,14 @@ function saveLocation(location) {
 
 function renderSavedLocations(){
     savedLocationsHolder.innerHTML = '';
+
+    if(savedLocations.length < 1){
+        const emptyState = document.createElement('div');
+        emptyState.classList.add('empty-sidebar-state');
+        emptyState.innerText = 'You have no locations saved';
+
+        savedLocationsHolder.appendChild(emptyState);
+    }
 
     savedLocations.forEach(location => {
         const index = savedLocations.findIndex(l => l.name === location.name);
@@ -290,7 +325,104 @@ function renderSavedLocations(){
         savedLocationCard.appendChild(locationTitle);
         savedLocationCard.appendChild(removeSavedLocationBtn);
     });
-};
+}
+
+// Home Page Fucntionality
+async function renderDashboardFromHomePage(city) {
+    const geoCodingURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${APIkey}`
+
+    try {
+        const response = await fetch(geoCodingURL);
+
+        const data = await response.json();
+        console.log(data);
+
+        const lat = data[0].lat;
+        const lon = data[0].lon;
+
+        const currentResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIkey}`);
+
+        const currentWeatherData = await currentResponse.json();
+        console.log(currentWeatherData);
+
+        renderWeatherDashboard(currentWeatherData);
+    } catch (error){
+        console.log(error);
+        output.innerHTML = ''
+        const errorCard = document.createElement('div');
+        errorCard.classList.add('error-message');
+        errorCard.innerText = 'failed to load location';
+        output.appendChild(errorCard);
+    }
+}
+
+
+const homePageLocations = [
+    {name: 'London', picture: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
+    {name: 'Tokyo', picture: 'https://images.unsplash.com/photo-1604928141064-207cea6f571f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=928'},
+    {name: 'Lisbon', picture: 'https://images.unsplash.com/photo-1525207934214-58e69a8f8a3e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
+    {name: 'Seoul', picture: 'https://images.unsplash.com/photo-1506816561089-5cc37b3aa9b0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=975'},
+    {name: 'Cape Town', picture: 'https://images.unsplash.com/photo-1591742708307-ce49d19450d4?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074'},
+    {name: 'New York', picture: 'https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
+    {name: 'Shanghai', picture: 'https://images.unsplash.com/photo-1523281855495-b46cf55b1e7e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074'},
+    {name: 'Toronto', picture: 'https://images.unsplash.com/photo-1632857997897-9418428d7368?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
+    {name: 'Santiago', picture: 'https://images.unsplash.com/photo-1597006438013-0f0cca2c1a03?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074'},
+]
+
+function renderHomePage(){
+    output.innerHTML = '';
+
+    const homePage = document.createElement('div');
+    homePage.classList.add('home-page');
+
+    const searchArea = document.createElement('div');
+    searchArea.classList.add('search-area');
+
+    const searchOverlay = document.createElement('div');
+    searchOverlay.classList.add('search-overlay');
+
+    const searchBar = document.createElement('input');
+    searchBar.type = 'text';
+    searchBar.classList.add('search-area-bar');
+
+    const searchBtn = document.createElement('button');
+    searchBtn.classList.add('search-area-btn');
+
+    searchOverlay.appendChild(searchBar);
+    searchOverlay.appendChild(searchBtn);
+    searchArea.appendChild(searchOverlay)
+
+    const locationsHolder = document.createElement('div');
+    locationsHolder.classList.add('home-page-locations-holder');
+
+    homePageLocations.forEach(location => {
+        const card = document.createElement('div');
+        card.classList.add('home-page-location-card');
+
+        const cardTitle = document.createElement('div');
+        cardTitle.classList.add('home-page-location-card-title');
+        cardTitle.innerText = location.name;
+
+        const cardPhoto = document.createElement('div');
+        cardPhoto.classList.add('home-page-location-card-photo');
+        cardPhoto.style.backgroundImage = `url('${location.picture}')`;
+
+        card.appendChild(cardTitle);
+        card.appendChild(cardPhoto);
+        locationsHolder.appendChild(card);
+
+        card.addEventListener('click', () => {
+            renderDashboardFromHomePage(location.name)
+            isHomePageShowing = false;
+        });
+    })
+
+    homePage.appendChild(searchArea);
+    homePage.appendChild(locationsHolder);
+
+    output.appendChild(homePage);
+    isHomePageShowing = true;
+}
 
 const openSidebar = () => {
     if(sidebar.classList.contains('closed')){
@@ -305,7 +437,8 @@ const openSidebar = () => {
 }
 
 sidebarBtn.addEventListener('click', openSidebar);
-
+homeBtn.addEventListener('click', renderHomePage);
 searchBtn.addEventListener('click', () => {getGeoLocations(searchBar)});
 
+renderHomePage();
 renderSavedLocations();

@@ -20,6 +20,7 @@ body {
     margin: 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     background-color: #282828;
 }
 
@@ -27,6 +28,7 @@ body {
     height: 90vh;
     border: 1px solid black;
     position: relative;
+    max-width: 1000px;
 }
 
 #page-header {
@@ -130,6 +132,10 @@ body {
     color: var(--module-font-color);
 }
 
+.save-location-btn:hover {
+    border: 1px solid var(--module-font-color);
+}
+
 .location-title {
     height: 100%;
     font-size: 2rem;
@@ -180,6 +186,7 @@ body {
     top: 0;
     left: 0;
     width: 25vw;
+    max-width: 300px;
     height: 100vh;
     background-color: var(--module-tertiary);
     color: var(--module-font-color);
@@ -293,7 +300,6 @@ body {
 }
 
 .info-row:hover {
-    border: 1px solid white;
     cursor: default;
 }
 
@@ -322,4 +328,116 @@ body {
     width: 100%;
     border-radius: 8px;
     margin-top: 20px;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+} 
+
+/* Error Messages */
+.error-message {
+    height: 100%;
+    width: 100%;
+    border: 1px solid greenyellow;
+    color: var(--module-font-color);
+}
+
+/* Home page Styling */
+#home-btn {
+    height: 50%;
+    aspect-ratio: 1;
+    position: absolute;
+    right: 25px;
+    top: 25px;
+    background-image: url('./home.svg');
+    background-position: center;
+    background-size: contain;
+}
+
+#home-btn:hover {
+    cursor: pointer;
+}
+
+.home-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-area {
+    height: 40vh;
+    width: 100%;
+    border: 1px solid yellow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('https://images.unsplash.com/photo-1660316478325-f16d1141f4a0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1032');
+}
+
+.search-overlay {
+    background-color: #000000D4;
+    height: 50%;
+    width: 50%;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.home-page-locations-holder {
+    border: 1px solid purple;
+    height: 50vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+    gap: 0px;
+}
+
+.home-page-location-card {
+    border: 1px solid var(--module-color);
+    height: 30%;
+    width: 30%;
+    border-radius: 8px;
+    padding: 3px;
+    background-color: var(--module-color);
+    color: var(--module-font-color);
+}
+
+.home-page-location-card:hover {
+    background-color: var(--module-secondary);
+    border: 1px solid var(--module-font-color);
+    cursor: pointer;
+}
+
+.home-page-location-card-title {
+    height: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.home-page-location-card-photo {
+    height: 75%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
 }
