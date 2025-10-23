@@ -176,6 +176,7 @@ function createWeatherInfoCards(array, cardHolder){
 
 }
 
+// Current Weather Info
 async function getWeatherInfo(lat, lon) {
     const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIkey}`;
     try {
@@ -200,9 +201,12 @@ async function getWeatherInfo(lat, lon) {
     }
 }
 
-
+//Render Search Results
 function renderLocationCards(array) {
     output.innerHTML = ``;
+
+    const searchResultsHolder = document.createElement('div');
+    searchResultsHolder.classList.add('search-results-holder');
 
     array.forEach(location => {
             const locationCard = document.createElement('div');
@@ -219,7 +223,7 @@ function renderLocationCards(array) {
             locationCard.appendChild(locationTitle);
             locationCard.appendChild(locationCardPhoto);
 
-            output.appendChild(locationCard);
+            searchResultsHolder.appendChild(locationCard);
 
             const locationIndex = array.findIndex(l => l.name === loactionName);
 
@@ -227,8 +231,11 @@ function renderLocationCards(array) {
                 getWeatherInfo(array[locationIndex].lat, array[locationIndex].lon)
             })
         });
-    }
+    
+    output.appendChild(searchResultsHolder);
+}
 
+//Get geo locations
 async function getGeoLocations(input) {
     const cityName = input.value;
     const geoCodingURL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=5&appid=${APIkey}`
@@ -381,15 +388,33 @@ function renderHomePage(){
     const searchOverlay = document.createElement('div');
     searchOverlay.classList.add('search-overlay');
 
+    const mainText = document.createElement('div');
+    mainText.classList.add('search-text');
+    mainText.innerText = 'Get the Weather anywhere in the World!'
+
+    const searchHolder = document.createElement('div');
+    searchHolder.classList.add('search-bar-btn-container');
+
     const searchBar = document.createElement('input');
     searchBar.type = 'text';
     searchBar.classList.add('search-area-bar');
+    searchBar.placeholder = 'New Mexico...';
+    searchBar.addEventListener('keypress', (event) => {
+        if(event.key === "Enter"){
+            getGeoLocations(searchBar);
+        }
+    })
 
-    const searchBtn = document.createElement('button');
+    const searchBtn = document.createElement('div');
     searchBtn.classList.add('search-area-btn');
+    searchBtn.addEventListener('click', () => {
+        getGeoLocations(searchBar);
+    })
 
-    searchOverlay.appendChild(searchBar);
-    searchOverlay.appendChild(searchBtn);
+    searchHolder.appendChild(searchBar);
+    searchHolder.appendChild(searchBtn);
+    searchOverlay.appendChild(mainText);
+    searchOverlay.appendChild(searchHolder);
     searchArea.appendChild(searchOverlay)
 
     const locationsHolder = document.createElement('div');
