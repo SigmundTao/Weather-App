@@ -26,9 +26,13 @@ body {
 
 #container {
     height: 90vh;
-    border: 1px solid black;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid violet;
     position: relative;
-    max-width: 1000px;
 }
 
 #page-header {
@@ -45,6 +49,7 @@ body {
 
 #search-bar {
     height: 50%;
+    width: 30%;
     border-radius: var(--module-border-radius);
     border: 1px solid var(--secondary);
     padding-left: 10px;
@@ -79,25 +84,76 @@ body {
   height: 90vh;
 }
 
-#search-results.sidebar-open {
-    margin-left: 25vw;
+.search-results-holder {
+    border: 1px solid red;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    padding: 20px;
+    gap: 15px;
 }
 
 .location-card {
-    height: 200px;
-    width: 400px;
-    border: 1px solid var(--secondary);
-    border-radius: 15px;
+    height: 20%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
+    position: relative;
+    border-radius: var(--module-border-radius);
+    padding: 3px;
+    background-color: var(--module-color);
 }
 
-.location-card-photo {
-    border: 1px solid black;
-    height: 90%;
+.location-card:hover {
+    border: 1px solid var(--module-font-color);
+}
+
+.location-search-title {
+    color: var(--module-font-color);
+    background-color: var(--module-color);
+    border-radius: var(--module-border-radius);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    justify-content: center;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    height: 50%;
+    padding: 5px;
+    font-weight: normal;
+    width: 30%;
+}
+
+.search-location-name {
+    height: 60%;
+    background-color: var(--module-secondary);
+    border-radius: var(--module-border-radius);
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding-left: 15px;
+}
+
+.search-location-state {
+    height: 40%;
+    background-color: var(--module-tertiary);
+    border-radius: var(--module-border-radius);
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+
+}
+
+.location-photo {
     width: 100%;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
+    border-radius: var(--module-border-radius);
 }
 
 /* Weather Dashboard */
@@ -107,6 +163,8 @@ body {
     padding: 0;
     margin: 0;
     justify-content: flex-start;
+    max-width: 800px;
+    position: relative;
 }
 
 .photo-header-container {
@@ -116,12 +174,11 @@ body {
 }
 
 .dashboard-photo {
-    border-bottom: 1px solid var(--secondary);
     height: 100%;
     width: 100%;
     aspect-ratio: 1;
-    background-image: url('https://images.unsplash.com/photo-1680216370618-f9938e5c9a17?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170');
     background-size: cover;
+    border-radius: var(--module-border-radius);
 }
 
 .dashboard-header-container {
@@ -140,17 +197,29 @@ body {
 }
 
 .save-location-btn {
-    width: 100px;
-    height: 25px;
-    
-    background-color: var(--module-secondary);
-    border: 2px solid var(--module-color);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 30px;
+    aspect-ratio: 1;
     border-radius: var(--module-border-radius);
     color: var(--module-font-color);
+
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.bookmark {
+    background-image: url('./bookmark.svg');
+}
+
+.bookmarked {
+    background-image: url('./bookmarked.svg');
 }
 
 .save-location-btn:hover {
-    border: 1px solid var(--module-font-color);
+    transform: scale(1.1);
 }
 
 .location-title {
@@ -190,16 +259,48 @@ body {
 }
 
 .time-div-holder {
-    border: 1px solid gold;
-    height: 5vh;
+    height: 8vh;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
 }
+
+.time-module {
+    background-color: var(--module-color);
+    border-radius: var(--module-border-radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3px;
+}
+
+.time-image-holder {
+    width: 50px;
+    aspect-ratio: 1;
+    background-color: var(--module-secondary);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: var(--module-border-radius);
+}
+
+.time-div {
+    width: 50px;
+
+    background-color: var(--module-tertiary);
+    color: var(--module-font-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
 /* Sidebar */
 #sidebar {
-    position: fixed; /* Always fixed — no layout shift */
+    position: fixed;
     top: 0;
     left: 0;
     width: 25vw;
@@ -207,9 +308,9 @@ body {
     height: 100vh;
     background-color: var(--module-tertiary);
     color: var(--module-font-color);
-    padding-top: 10vh; /* Push below the fixed header */
-    transition: transform 0.3s ease-in-out; /* Smooth transition */
-    transform: translateX(0); /* Default: visible */
+    padding-top: 10vh;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(0);
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -280,14 +381,13 @@ body {
 
 /* Weather info cards */
 .weather-info-cards-holder {
-    height: 40vh;
-    padding: 15px;
+    height: 60vh;
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
-    border: 1px solid violet;
+    gap: 5px;
 }
 
 .weather-info-card {
@@ -298,7 +398,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 30%;
+    width: 50%;
     color: white;
     gap: 5px;
     padding: 10px;
@@ -314,7 +414,7 @@ body {
     background-color: var(--module-secondary);
     width: 100%;
     font-weight: bold;
-    padding-left: 5px;
+    padding-left: 15px;
 }
 
 .info-row:hover {
@@ -342,10 +442,11 @@ body {
 }
 
 #weather-map {
-    height: 100px;
-    width: 100%;
+    width: 50%;
+    height: 100%;
     border-radius: 8px;
-    margin-top: 20px;
+    margin: auto;
+    border: 3px solid var(--module-color);
 }
 
 .loading-spinner {
@@ -372,8 +473,22 @@ body {
 .error-message {
     height: 100%;
     width: 100%;
-    border: 1px solid greenyellow;
     color: var(--module-font-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.world-logo {
+    height: 40vh;
+    aspect-ratio: 1;
+    background-image: url('./world.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
 }
 
 /* Home page Styling */
@@ -394,9 +509,13 @@ body {
 }
 
 .home-page {
-    width: 100%;
+    width: 800px;
     display: flex;
     flex-direction: column;
+    position: relative;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .search-area {
@@ -406,6 +525,8 @@ body {
     justify-content: center;
     align-items: center;
     background-image: url('https://images.unsplash.com/photo-1660316478325-f16d1141f4a0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1032');
+    border-radius: 8px;
+    border: 2px solid var(--module-color);
 }
 
 .search-overlay {
@@ -446,6 +567,7 @@ body {
     background-size: contain;
     border: none;
     background-position: center;
+    display: none;
 }
 
 .search-area-btn:hover {
@@ -492,6 +614,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-weight: bold;
 }
 
 .home-page-location-card-photo {
@@ -504,15 +627,74 @@ body {
 
 /* Tablets and smaller */
 @media (max-width: 1024px) {
+    #container {
+        height: 90vh;
+        position: relative;
+        max-width: 1000px;
+    }
+
+    /* Home page Styling */
+    .home-page {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .search-area {
+        height: 40vh;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-image: url('https://images.unsplash.com/photo-1660316478325-f16d1141f4a0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1032');
+    }
+
+    .search-area-btn {
+        height: 75%;
+        aspect-ratio: 1;
+        background-image: url('./search.svg');
+        background-size: contain;
+        border: none;
+        background-position: center;
+        display: inline;
+    }
+
+    .search-text {
+        height: 40%;
+        width: 80%;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 1.5rem;
+    }
 }
 
 /* Mobile Phones */
 @media only screen and (max-width: 768px){
+
+    #container {
+        height: 90vh;
+        position: relative;
+        max-width: 1000px;
+    }
+
     /* Home Page */
     .search-overlay {
         width: 80%;
     }
-    
+
+    .search-area {
+        height: 40vh;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-image: url('https://images.unsplash.com/photo-1660316478325-f16d1141f4a0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1032');
+    }
+        
     .home-page-locations-holder{
         display: flex;
         flex-direction: column;
@@ -524,7 +706,17 @@ body {
 
     .home-page-location-card {
         width: 75%;
-        height: 140px;
+        height: 180px;
+    }
+
+    .search-area-btn {
+        height: 75%;
+        aspect-ratio: 1;
+        background-image: url('./search.svg');
+        background-size: contain;
+        border: none;
+        background-position: center;
+        display: inline;
     }
 
     /* Search Results */
@@ -650,11 +842,11 @@ body {
 
     /* Weather info cards */
     .weather-info-cards-holder {
-        height: 40vh;
+        height: 60vh;
         padding: 15px;
         width: 100%;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
         border: 1px solid violet;
@@ -663,10 +855,10 @@ body {
     .weather-info-card {
         border-radius: 8px;
         background-color: var(--module-color);
-        height: 100%;
+        height: 50%;
         width: 100%;
         display: flex;
-        flex-direction: column;
+        flex-direction: column-reverse;
         align-items: center;
         justify-content: center;
         color: white;
@@ -712,14 +904,8 @@ body {
     }
 
     /* Weather Map */
-    .map-holder {
-        border: 2px solid pink;
-        height: 20vh;
-        padding: 15px;
-    }
-    
     #weather-map {
-        height: 50px;
+        height: 50%;
         width: 100%;
         border-radius: 8px;
     }
