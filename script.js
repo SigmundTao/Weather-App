@@ -384,76 +384,94 @@ function saveLocation(location, btn) {
         btn.classList.remove('bookmark');
         btn.classList.add('bookmarked');
     } else {
-        savedLocations.push(location);
+        savedLocations.push([location, null]);
+        console.log([location, null]);
         localStorage.setItem('savedLocations',JSON.stringify(savedLocations));
         btn.classList.remove('bookmark');
         btn.classList.add('bookmarked');
     }
 }
 
-function renderSavedLocations(){
+async function renderSavedLocations(){
     savedLocationsHolder.innerHTML = '';
-
+    
     if(savedLocations.length < 1){
         const emptyState = document.createElement('div');
         emptyState.classList.add('empty-sidebar-state');
         emptyState.innerText = 'You have no locations saved';
-
         savedLocationsHolder.appendChild(emptyState);
+        return;
     }
-
-    savedLocations.forEach(location => {
-        const index = savedLocations.findIndex(l => l.name === location.name);
-
+    
+    for(let index = 0; index < savedLocations.length; index++){
+        const location = savedLocations[index];
+        
+        // Check if location has the expected structure
+        if(!location[0] || !location[0].name) {
+            console.warn('Invalid location data:', location);
+            continue;
+        }
+        
         const savedLocationCard = document.createElement('div');
         savedLocationCard.classList.add('saved-location-card');
-
+        
         const locationTitle = document.createElement('div');
         locationTitle.classList.add('saved-location-title');
-        locationTitle.innerText = location.name;
-
+        locationTitle.innerText = location[0].name;
+        
         const locationPhoto = document.createElement('div');
         locationPhoto.classList.add('saved-location-photo');
-        const photo = getPhoto(location.name, location.state);
-        locationPhoto.style.backgroundImage = `url(${photo[0]})`;
-        console.log(photo)
-        console.log(photo[0]);
-        console.log(photo[1]);
-
+        
         const creds = document.createElement('div');
-        creds.innerText = `${photo[1]}`
-
-        savedLocationsHolder.appendChild(savedLocationCard);
-
-        savedLocationCard.addEventListener('click', (event) => {
-            const target = event.target;
-
-            if(target === removeSavedLocationBtn){
-
-            } else {
-                const lon = location.coord.lon;
-                const lat = location.coord.lat;
-
-                getWeatherInfo(lat, lon);
-                openSidebar();
-            }
-        })
-
+        
+        if(location[1]){
+            // Photo already cached
+            locationPhoto.style.backgroundImage = `url(${location[1][0]})`;
+            creds.innerText = location[1][1];
+        } else {
+            // Fetch new photo and cache it
+            const newPhoto = await getPhoto(location[0].name, location[0].country);
+            
+            // Check what getPhoto returns
+            console.log('Photo data:', newPhoto);
+            
+            const imageArray = [newPhoto[0], newPhoto[1]];
+            location[1] = imageArray;
+            
+            // Save updated location back to localStorage
+            localStorage.setItem('savedLocations', JSON.stringify(savedLocations));
+            
+            locationPhoto.style.backgroundImage = `url(${newPhoto[0]})`;
+            creds.innerText = newPhoto[1];
+        }
+        
         const removeSavedLocationBtn = document.createElement('button');
         removeSavedLocationBtn.classList.add('remove-saved-location-btn');
         removeSavedLocationBtn.innerText = 'X';
-
-        removeSavedLocationBtn.addEventListener('click', () => {
+        removeSavedLocationBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             savedLocations.splice(index, 1);
-            localStorage.setItem('savedLocations',JSON.stringify(savedLocations));
+            localStorage.setItem('savedLocations', JSON.stringify(savedLocations));
             renderSavedLocations();
-        })
-
+        });
+        
         savedLocationCard.appendChild(locationTitle);
         savedLocationCard.appendChild(locationPhoto);
         savedLocationCard.appendChild(removeSavedLocationBtn);
-        savedLocationCard.appendChild(creds)
-    });
+        savedLocationCard.appendChild(creds);
+        
+        savedLocationCard.addEventListener('click', (event) => {
+            const target = event.target;
+            if(target !== removeSavedLocationBtn){
+                const lon = location[0].coord.lon;
+                const lat = location[0].coord.lat;
+                getWeatherInfo(lat, lon);
+                openSidebar();
+            }
+        });
+        
+        savedLocationsHolder.appendChild(savedLocationCard);
+    }
 }
 
 // Home Page Fucntionality
