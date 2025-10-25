@@ -178,7 +178,10 @@ body {
     width: 100%;
     aspect-ratio: 1;
     background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: var(--module-border-radius);
+    border: 1px solid red;
 }
 
 .dashboard-header-container {
@@ -350,6 +353,8 @@ body {
     width: 90%;
     aspect-ratio: 1.5;
     border-radius: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
 .saved-location-card:hover {
@@ -373,6 +378,15 @@ body {
     overflow-x: hidden;
     font-size: small;
     font-weight: bold;
+}
+
+.saved-location-photo {
+    height: 75%;
+    width: 100%;
+    border: 1px solid red;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .no-transition #search-results {

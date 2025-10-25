@@ -23,6 +23,7 @@ async function getPhoto(city, state) {
         const extractedData = [data.results[0].urls.regular, data.results[0].user.name];
         console.log(extractedData);
 
+        return extractedData;
     } catch(error) {
         console.log(error);
     }
@@ -89,6 +90,7 @@ function renderWeatherDashboard(location, photoData){
     
     const dashboardPhoto = document.createElement('div');
     dashboardPhoto.classList.add('dashboard-photo');
+    dashboardPhoto.style.backgroundImage = `url(${photoData[0]})`;
     
     const imageCreds = document.createElement('div');
 
@@ -411,6 +413,15 @@ function renderSavedLocations(){
         locationTitle.innerText = location.name;
 
         const locationPhoto = document.createElement('div');
+        locationPhoto.classList.add('saved-location-photo');
+        const photo = getPhoto(location.name, location.state);
+        locationPhoto.style.backgroundImage = `url(${photo[0]})`;
+        console.log(photo)
+        console.log(photo[0]);
+        console.log(photo[1]);
+
+        const creds = document.createElement('div');
+        creds.innerText = `${photo[1]}`
 
         savedLocationsHolder.appendChild(savedLocationCard);
 
@@ -438,14 +449,16 @@ function renderSavedLocations(){
             renderSavedLocations();
         })
 
-        savedLocationCard.appendChild(locationPhoto);
         savedLocationCard.appendChild(locationTitle);
+        savedLocationCard.appendChild(locationPhoto);
         savedLocationCard.appendChild(removeSavedLocationBtn);
+        savedLocationCard.appendChild(creds)
     });
 }
 
 // Home Page Fucntionality
-async function renderDashboardFromHomePage(city) {
+async function renderDashboardFromHomePage(city, state) {
+    const place = `${city}, ${state}`
     const geoCodingURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${APIkey}`
 
     try {
@@ -456,7 +469,6 @@ async function renderDashboardFromHomePage(city) {
 
         const lat = data[0].lat;
         const lon = data[0].lon;
-        const state = data.state;
 
         const currentResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIkey}`);
 
@@ -473,15 +485,15 @@ async function renderDashboardFromHomePage(city) {
 
 
 const homePageLocations = [
-    {name: 'London', picture: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
-    {name: 'Tokyo', picture: 'https://images.unsplash.com/photo-1604928141064-207cea6f571f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=928'},
-    {name: 'Lisbon', picture: 'https://images.unsplash.com/photo-1525207934214-58e69a8f8a3e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
-    {name: 'Seoul', picture: 'https://images.unsplash.com/photo-1506816561089-5cc37b3aa9b0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=975'},
-    {name: 'Cape Town', picture: 'https://images.unsplash.com/photo-1591742708307-ce49d19450d4?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074'},
-    {name: 'New York', picture: 'https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
-    {name: 'Shanghai', picture: 'https://images.unsplash.com/photo-1627484986972-e544190b8abb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1168'},
-    {name: 'Toronto', picture: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
-    {name: 'Santiago', picture: 'https://images.unsplash.com/photo-1597006438013-0f0cca2c1a03?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074'},
+    {name: 'London',country: "England", picture: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
+    {name: 'Tokyo',country: "Japan", picture: 'https://images.unsplash.com/photo-1604928141064-207cea6f571f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=928'},
+    {name: 'Lisbon',country: "Portugal", picture: 'https://images.unsplash.com/photo-1525207934214-58e69a8f8a3e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
+    {name: 'Seoul',country: "South korea", picture: 'https://images.unsplash.com/photo-1506816561089-5cc37b3aa9b0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=975'},
+    {name: 'Cape Town',country: "South Africa", picture: 'https://images.unsplash.com/photo-1591742708307-ce49d19450d4?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074'},
+    {name: 'New York',country: "USA", picture: 'https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
+    {name: 'Shanghai',country: "China", picture: 'https://images.unsplash.com/photo-1627484986972-e544190b8abb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1168'},
+    {name: 'Toronto',country: "Canada", picture: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
+    {name: 'Santiago',country: "Chile", picture: 'https://images.unsplash.com/photo-1597006438013-0f0cca2c1a03?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074'},
 ]
 
 function renderHomePage(){
@@ -548,7 +560,7 @@ function renderHomePage(){
         locationsHolder.appendChild(card);
 
         card.addEventListener('click', () => {
-            renderDashboardFromHomePage(location.name)
+            renderDashboardFromHomePage(location.name, location.country)
             isHomePageShowing = false;
         });
     })
