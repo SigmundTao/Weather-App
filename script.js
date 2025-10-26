@@ -10,6 +10,23 @@ const homeBtn = document.getElementById('home-btn');
 let currentMap = null;
 let isHomePageShowing = true;
 
+document.addEventListener('keydown', (event) => {
+    const key = event.key
+
+    if(key === 'Escape'){
+        renderHomePage();
+    }
+})
+
+searchBar.addEventListener('keydown', event => {
+    const key = event.key;
+
+    if(key === 'Enter'){
+        getGeoLocations(searchBar)
+    }
+
+})
+
 async function getPhoto(city, state) {
     const location = `${city}, ${state}`;
     const url = `https://api.unsplash.com/search/photos?query=${location}&client_id=${unsplashKey}&per_page=1`;
@@ -70,10 +87,7 @@ function convertToLocalTime(utcTimestamp, timezoneOffset){
 
 //Weather Dashboard
 function renderWeatherDashboard(location, photoData){
-    console.log('photoData received:', photoData);
-    console.log('photoData type:', typeof photoData);
-    console.log('photoData[0]:', photoData[0]);
-    console.log('photoData[1]:', photoData[1]);
+    console.log(location);
     output.innerHTML = '';
 
     const weatherDashboard = document.createElement('div');
@@ -93,6 +107,8 @@ function renderWeatherDashboard(location, photoData){
     dashboardPhoto.style.backgroundImage = `url(${photoData[0]})`;
     
     const imageCreds = document.createElement('div');
+    imageCreds.classList.add('image-creds');
+    imageCreds.innerText = photoData[1];
 
     const headerContainer = document.createElement('div');
     headerContainer.classList.add('dashboard-header-container');
@@ -221,19 +237,21 @@ function renderWeatherDashboard(location, photoData){
 
     createWeatherInfoCards(mainWeatherInfo, weatherInfoCardsHolder);
     
+    //Save location functionality
     const saveLocationBtn = document.createElement('div');
     saveLocationBtn.classList.add('save-location-btn');
 
-    const isInitiallyBookmarked = savedLocations.findIndex(loc => loc.id === location.id) != -1;
-        if(isInitiallyBookmarked){
-            saveLocationBtn.classList.add('bookmarked');
-        } else {
-            saveLocationBtn.classList.add('bookmark');
-        }
+    const isInitiallyBookmarked = savedLocations.findIndex(loc => loc[0].id === location.id) !== -1;
+    console.log(isInitiallyBookmarked);
+    if(isInitiallyBookmarked){
+        saveLocationBtn.classList.add('bookmarked');
+    } else {
+        saveLocationBtn.classList.add('bookmark');
+    }
 
     saveLocationBtn.addEventListener('click', () => {
-        const currentIndex = savedLocations.findIndex(l => l === location) != -1;
-        if(currentIndex){
+        const currentIndex = savedLocations.findIndex(l => l[0].id === location.id);
+        if(currentIndex !== -1){
             savedLocations.splice(currentIndex, 1);
             saveLocationBtn.classList.remove('bookmarked');
             saveLocationBtn.classList.add('bookmark');
@@ -255,6 +273,7 @@ function renderWeatherDashboard(location, photoData){
     output.appendChild(weatherDashboard);
     weatherInfoCardsHolder.appendChild(mapDiv);
     createWeatherMap(location.coord.lat, location.coord.lon);
+    console.log(location.coord.lat, location.coord.lon);
 }
 
 function createWeatherInfoCards(array, cardHolder){
@@ -294,6 +313,7 @@ async function getWeatherInfo(lat, lon, state) {
 
         const data = await response.json();
         console.log(data);
+        console.log(`this is the data you are looking for:`, lat, lon);
 
         const photoData = await getPhoto(data.name, state);
         console.log(photoData);
@@ -306,13 +326,13 @@ async function getWeatherInfo(lat, lon, state) {
 }
 
 //Render Search Results
-function renderLocationCards(array) {
+async function renderLocationCards(array) {
     output.innerHTML = ``;
 
     const searchResultsHolder = document.createElement('div');
     searchResultsHolder.classList.add('search-results-holder');
 
-    array.forEach(location => {
+    for (const location of array){
             const locationCard = document.createElement('div');
             locationCard.classList.add('location-card');
 
@@ -330,20 +350,29 @@ function renderLocationCards(array) {
             locationTitle.appendChild(locationName);
             locationTitle.appendChild(locationState);
 
+            const photo = await getPhoto(location.name, location.state);
+
             const locationPhoto = document.createElement('div');
             locationPhoto.classList.add('location-photo');
+            locationPhoto.style.backgroundImage = `url('${photo[0]}')`;
+            console.log(`photo[0]: ${photo[0]}`);
+
+            const creds = document.createElement('div');
+            creds.classList.add('location-card-creds');
+            creds.innerText = photo[1];
 
             locationCard.appendChild(locationPhoto);
             locationCard.appendChild(locationTitle);
+            locationCard.appendChild(creds);
 
             searchResultsHolder.appendChild(locationCard);
 
-            const locationIndex = array.findIndex(l => l.name === location.name);
+            const locationIndex = array.findIndex(l => l.lat === location.lat);
 
             locationCard.addEventListener('click', () => {
                 getWeatherInfo(array[locationIndex].lat, array[locationIndex].lon, location.state);
             })
-        });
+        };
     
     output.appendChild(searchResultsHolder);
 }
@@ -359,7 +388,7 @@ async function getGeoLocations(input) {
         console.log('city name:', cityName);
 
         const data = await response.json();
-        console.log(data);
+        console.log('this is the data:',data);
 
 
         if(!data.length){
@@ -379,8 +408,9 @@ const savedLocations = JSON.parse(localStorage.getItem('savedLocations')) || [];
 
 
 function saveLocation(location, btn) {
-    const locationIndex = savedLocations.findIndex(l => l.id === location.id) != -1;
-    if(locationIndex){
+    const locationIndex = savedLocations.findIndex(l => l[0].id === location.id);
+    console.log(location);
+    if(locationIndex !== -1){
         btn.classList.remove('bookmark');
         btn.classList.add('bookmarked');
     } else {
@@ -393,6 +423,7 @@ function saveLocation(location, btn) {
 }
 
 async function renderSavedLocations(){
+    console.log(savedLocations)
     savedLocationsHolder.innerHTML = '';
     
     if(savedLocations.length < 1){
@@ -406,7 +437,6 @@ async function renderSavedLocations(){
     for(let index = 0; index < savedLocations.length; index++){
         const location = savedLocations[index];
         
-        // Check if location has the expected structure
         if(!location[0] || !location[0].name) {
             console.warn('Invalid location data:', location);
             continue;
@@ -423,22 +453,20 @@ async function renderSavedLocations(){
         locationPhoto.classList.add('saved-location-photo');
         
         const creds = document.createElement('div');
+        creds.classList.add('saved-location-credits');
         
         if(location[1]){
-            // Photo already cached
             locationPhoto.style.backgroundImage = `url(${location[1][0]})`;
             creds.innerText = location[1][1];
+
         } else {
-            // Fetch new photo and cache it
             const newPhoto = await getPhoto(location[0].name, location[0].country);
             
-            // Check what getPhoto returns
             console.log('Photo data:', newPhoto);
             
             const imageArray = [newPhoto[0], newPhoto[1]];
             location[1] = imageArray;
             
-            // Save updated location back to localStorage
             localStorage.setItem('savedLocations', JSON.stringify(savedLocations));
             
             locationPhoto.style.backgroundImage = `url(${newPhoto[0]})`;
@@ -477,13 +505,13 @@ async function renderSavedLocations(){
 // Home Page Fucntionality
 async function renderDashboardFromHomePage(city, state) {
     const place = `${city}, ${state}`
-    const geoCodingURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${APIkey}`
+    const geoCodingURL = `http://api.openweathermap.org/geo/1.0/direct?q=${place}&limit=1&appid=${APIkey}`
 
     try {
         const response = await fetch(geoCodingURL);
 
         const data = await response.json();
-        console.log(data);
+        console.log('this data blud', data);
 
         const lat = data[0].lat;
         const lon = data[0].lon;
@@ -511,7 +539,7 @@ const homePageLocations = [
     {name: 'New York',country: "USA", picture: 'https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
     {name: 'Shanghai',country: "China", picture: 'https://images.unsplash.com/photo-1627484986972-e544190b8abb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1168'},
     {name: 'Toronto',country: "Canada", picture: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
-    {name: 'Santiago',country: "Chile", picture: 'https://images.unsplash.com/photo-1597006438013-0f0cca2c1a03?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074'},
+    {name: 'Rio',country: "Brazil", picture: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170'},
 ]
 
 function renderHomePage(){
@@ -578,8 +606,8 @@ function renderHomePage(){
         locationsHolder.appendChild(card);
 
         card.addEventListener('click', () => {
-            renderDashboardFromHomePage(location.name, location.country)
-            isHomePageShowing = false;
+            renderDashboardFromHomePage(location.name, location.country);
+            console.log('look here TAO!:', location.name, location.country);
         });
     })
 
