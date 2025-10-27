@@ -371,7 +371,7 @@ async function renderLocationCards(array) {
 //Get geo locations
 async function getGeoLocations(input) {
     const cityName = input.value;
-    const geoCodingURL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=5&appid=${APIkey}`
+    const geoCodingURL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=5&appid=${APIkey}`
     try{
         const response = await fetch(geoCodingURL);
 
@@ -487,7 +487,7 @@ async function renderSavedLocations(){
 // Home Page Fucntionality
 async function renderDashboardFromHomePage(city, state) {
     const place = `${city}, ${state}`
-    const geoCodingURL = `http://api.openweathermap.org/geo/1.0/direct?q=${place}&limit=1&appid=${APIkey}`
+    const geoCodingURL = `https://api.openweathermap.org/geo/1.0/direct?q=${place}&limit=1&appid=${APIkey}`
 
     try {
         const response = await fetch(geoCodingURL);
