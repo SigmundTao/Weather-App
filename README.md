@@ -26,3 +26,5 @@ Real-time weather application with 5-day forecasts, interactive maps, and locati
 ## Live Demo
 [https://weatherapp-delta-vert.vercel.app/]
 
+<img width="1000" aspect-reation="auto" alt="Screen Shot 2025-10-27 at 13 26 57" src="https://github.com/user-attachments/assets/7d3db2ab-44d5-4c43-a1de-a38e72b6649a" />
+<img width="500px" aspect-ratio="auto" alt="Screen Shot 2025-10-27 at 13 26 49" src="https://github.com/user-attachments/assets/3d75f659-278c-4809-9054-1b2ddab70e82" />
