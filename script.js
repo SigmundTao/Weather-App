@@ -35,14 +35,12 @@ async function getPhoto(city, state) {
         const response = await fetch(url);
 
         const data = await response.json();
-        console.log(data);
 
         const extractedData = [data.results[0].urls.regular, data.results[0].user.name];
-        console.log(extractedData);
 
         return extractedData;
     } catch(error) {
-        console.log(error);
+        logError(error);
     }
 }
 
@@ -87,7 +85,6 @@ function convertToLocalTime(utcTimestamp, timezoneOffset){
 
 //Weather Dashboard
 function renderWeatherDashboard(location, photoData){
-    console.log(location);
     output.innerHTML = '';
 
     const weatherDashboard = document.createElement('div');
@@ -242,7 +239,6 @@ function renderWeatherDashboard(location, photoData){
     saveLocationBtn.classList.add('save-location-btn');
 
     const isInitiallyBookmarked = savedLocations.findIndex(loc => loc[0].id === location.id) !== -1;
-    console.log(isInitiallyBookmarked);
     if(isInitiallyBookmarked){
         saveLocationBtn.classList.add('bookmarked');
     } else {
@@ -273,7 +269,6 @@ function renderWeatherDashboard(location, photoData){
     output.appendChild(weatherDashboard);
     weatherInfoCardsHolder.appendChild(mapDiv);
     createWeatherMap(location.coord.lat, location.coord.lon);
-    console.log(location.coord.lat, location.coord.lon);
 }
 
 function createWeatherInfoCards(array, cardHolder){
@@ -312,11 +307,8 @@ async function getWeatherInfo(lat, lon, state) {
         spinner.classList.add('loading-spinner');
 
         const data = await response.json();
-        console.log(data);
-        console.log(`this is the data you are looking for:`, lat, lon);
 
         const photoData = await getPhoto(data.name, state);
-        console.log(photoData);
 
         renderWeatherDashboard(data, photoData);
 
@@ -355,7 +347,6 @@ async function renderLocationCards(array) {
             const locationPhoto = document.createElement('div');
             locationPhoto.classList.add('location-photo');
             locationPhoto.style.backgroundImage = `url('${photo[0]}')`;
-            console.log(`photo[0]: ${photo[0]}`);
 
             const creds = document.createElement('div');
             creds.classList.add('location-card-creds');
@@ -382,13 +373,9 @@ async function getGeoLocations(input) {
     const cityName = input.value;
     const geoCodingURL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=5&appid=${APIkey}`
     try{
-        console.log('url:', geoCodingURL);
         const response = await fetch(geoCodingURL);
-        console.log('response status:', response.status);
-        console.log('city name:', cityName);
 
         const data = await response.json();
-        console.log('this is the data:',data);
 
 
         if(!data.length){
@@ -409,13 +396,11 @@ const savedLocations = JSON.parse(localStorage.getItem('savedLocations')) || [];
 
 function saveLocation(location, btn) {
     const locationIndex = savedLocations.findIndex(l => l[0].id === location.id);
-    console.log(location);
     if(locationIndex !== -1){
         btn.classList.remove('bookmark');
         btn.classList.add('bookmarked');
     } else {
         savedLocations.push([location, null]);
-        console.log([location, null]);
         localStorage.setItem('savedLocations',JSON.stringify(savedLocations));
         btn.classList.remove('bookmark');
         btn.classList.add('bookmarked');
@@ -423,7 +408,6 @@ function saveLocation(location, btn) {
 }
 
 async function renderSavedLocations(){
-    console.log(savedLocations)
     savedLocationsHolder.innerHTML = '';
     
     if(savedLocations.length < 1){
@@ -461,9 +445,7 @@ async function renderSavedLocations(){
 
         } else {
             const newPhoto = await getPhoto(location[0].name, location[0].country);
-            
-            console.log('Photo data:', newPhoto);
-            
+                        
             const imageArray = [newPhoto[0], newPhoto[1]];
             location[1] = imageArray;
             
@@ -511,7 +493,6 @@ async function renderDashboardFromHomePage(city, state) {
         const response = await fetch(geoCodingURL);
 
         const data = await response.json();
-        console.log('this data blud', data);
 
         const lat = data[0].lat;
         const lon = data[0].lon;
@@ -519,7 +500,6 @@ async function renderDashboardFromHomePage(city, state) {
         const currentResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIkey}`);
 
         const currentWeatherData = await currentResponse.json();
-        console.log(currentWeatherData);
 
         const getPhotoData = await getPhoto(data.name, state);
 
@@ -607,7 +587,6 @@ function renderHomePage(){
 
         card.addEventListener('click', () => {
             renderDashboardFromHomePage(location.name, location.country);
-            console.log('look here TAO!:', location.name, location.country);
         });
     })
 

@@ -176,7 +176,7 @@ body {
 .weather-dashboard {
     display: flex;
     flex-direction: column;
-    padding: 0;
+    padding: 10px;
     margin: 0;
     justify-content: flex-start;
     position: absolute;
@@ -1025,6 +1025,9 @@ hr {
         padding: 5px;
     }
 
+    .info-row-info {
+        font-weight: normal;
+    }
 
 }
 
