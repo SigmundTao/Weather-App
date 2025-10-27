@@ -3,7 +3,7 @@
 Real-time weather application with 5-day forecasts, interactive maps, and location bookmarking.
 
 ## Features
-- Current weather conditions and 5-day forecasts
+- Current weather conditions
 - Interactive Leaflet maps
 - City photography from Unsplash
 - Save favorite locations
